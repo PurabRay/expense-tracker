@@ -1,4 +1,5 @@
 {
+  "proxy": "http://localhost:8080/api/v1",
   "name": "expense-tracker",
   "version": "1.0.0",
   "main": "server.js",
@@ -7,7 +8,7 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\" "
+    "dev": "concurrently \"npm start\" \"npm run client\" "
   },
   "keywords": [],
   "author": "",
