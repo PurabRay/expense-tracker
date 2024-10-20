@@ -1,0 +1,29 @@
+*{
+  padding:0;
+  margin:0;
+  box-sizing: border-box;
+}
+.content{
+  height:80vh;
+}
+.navbar{
+  background-color:rgb(110, 110, 158) !important;
+}
+.filters{
+  display:flex;
+  align-items: center;
+  justify-content: space-between;
+  padding:15px 20px;
+  box-shadow: 0 0 3px gray;
+}
+.anticon svg{
+   font-size: 20px;
+   cursor:pointer;
+   margin-top: 20px;
+}
+.active-icon{
+  color:rgb(110, 110, 158);
+}
+.inactive-icon{
+  color:black;
+}
