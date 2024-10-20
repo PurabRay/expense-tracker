@@ -1,33 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Select, Form, Input, message, Table,DatePicker } from "antd";
+import { Modal, Select, Form, Input, message, Table, DatePicker } from 'antd';
 import Layout from '../components/Layouts/Layout';
 import axios from 'axios';
 import Spinner from '../components/Layouts/Spinner';
 import moment from 'moment';
 import Analytics from '../components/Layouts/Analytics';
-import {UnorderedListOutlined,AreaChartOutlined} from '@ant-design/icons'
-const {RangePicker}=DatePicker
+import { UnorderedListOutlined, AreaChartOutlined } from '@ant-design/icons';
+
+const { RangePicker } = DatePicker;
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
 const HomePage = () => {
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [allTransaction, setAllTransaction] = useState([]);
-  const [filter,SetFilter]=useState('7')
-  const [selectedDate,setSelectedDate]=useState([])
-  const [type,setType]=useState('all')
-  const [viewData,setViewData]=useState('table')
-  
+  const [filter, SetFilter] = useState('7');
+  const [selectedDate, setSelectedDate] = useState([]);
+  const [type, setType] = useState('all');
+  const [viewData, setViewData] = useState('table');
+
   useEffect(() => {
     getAllTransactions();
-  }, [filter,selectedDate,type]);
+  }, [filter, selectedDate, type]);
 
   const columns = [
     {
       title: 'Date',
       dataIndex: 'date',
-      render:(text)=><span>
-      {moment(text).format('YYYY-MM-DD')}
-      </span>
+      render: (text) => <span>{moment(text).format('YYYY-MM-DD')}</span>,
     },
     {
       title: 'Amount',
@@ -52,38 +53,40 @@ const HomePage = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text, record) => (
-        <button className="btn btn-danger">Delete</button>
-      ),
+      render: (text, record) => <button className="btn btn-danger">Delete</button>,
     },
   ];
 
- 
   const getAllTransactions = async () => {
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       setLoading(true);
-      const res = await axios.post('/api/v1/transactions/get-transaction', { userid: user._id,filter,selectedDate,type });
+      const res = await axios.post(`${API_BASE_URL}/api/v1/transactions/get-transaction`, {
+        userid: user._id,
+        filter,
+        selectedDate,
+        type,
+      });
       setLoading(false);
-      setAllTransaction(res.data);  
-      console.log(res.data);
+      setAllTransaction(res.data);
     } catch (error) {
       setLoading(false);
-      console.error(error);
       message.error('Fetch issue with Transaction');
     }
   };
 
-  
   const handleSubmit = async (values) => {
     try {
-      const user = JSON.parse(localStorage.getItem('user'));  
+      const user = JSON.parse(localStorage.getItem('user'));
       setLoading(true);
-      await axios.post('/api/v1/transactions/add-transaction', { ...values, userid: user._id });
+      await axios.post(`${API_BASE_URL}/api/v1/transactions/add-transaction`, {
+        ...values,
+        userid: user._id,
+      });
       setLoading(false);
-      message.success("Transaction added successfully");
+      message.success('Transaction added successfully');
       setShowModal(false);
-      getAllTransactions();  
+      getAllTransactions();
     } catch (error) {
       setLoading(false);
       message.error('Error in submitting form:', error.response?.data || error.message);
@@ -96,59 +99,45 @@ const HomePage = () => {
       <div className="filters">
         <div>
           <h6>Select Filter</h6>
-          <Select value={filter} onChange={(values)=>SetFilter(values)}>
+          <Select value={filter} onChange={(values) => SetFilter(values)}>
             <Select.Option value="7">Last 1 Week</Select.Option>
             <Select.Option value="30">Last 1 Month</Select.Option>
             <Select.Option value="365">Last 1 Year</Select.Option>
             <Select.Option value="custom">custom</Select.Option>
-            </Select>
-            {filter === 'custom' && (
-  <RangePicker
-    onChange={(values) => setSelectedDate(
-      values ? [values[0].format('YYYY-MM-DD'), values[1].format('YYYY-MM-DD')] : []
-    )}
-    style={{ width: '100%' }}
-  />
-)}
-
+          </Select>
+          {filter === 'custom' && (
+            <RangePicker
+              onChange={(values) => setSelectedDate(values ? [values[0].format('YYYY-MM-DD'), values[1].format('YYYY-MM-DD')] : [])}
+              style={{ width: '100%' }}
+            />
+          )}
         </div>
         <div>
           <h6>Select Type</h6>
-          <Select value={type} onChange={(values)=>setType(values)}>
+          <Select value={type} onChange={(values) => setType(values)}>
             <Select.Option value="all">All</Select.Option>
             <Select.Option value="income">Income</Select.Option>
             <Select.Option value="expense">Expense</Select.Option>
-            
-            </Select>
-            {filter === 'custom' && (
-  <RangePicker
-    onChange={(values) => setSelectedDate(
-      values ? [values[0].format('YYYY-MM-DD'), values[1].format('YYYY-MM-DD')] : []
-    )}
-    style={{ width: '100%' }}
-  />
-)}
-
+          </Select>
         </div>
         <div>
-          
-          <button className="btn btn-primary" onClick={() => setShowModal(true)}>Add New</button>
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+            Add New
+          </button>
         </div>
       </div>
       <div className="mx-2 d-flex justify-content-center align-items-center border-black 1px">
-      <UnorderedListOutlined 
-       className={`mx-2 ${viewData === 'table' ? 'active-icon' : 'inactive-icon'}`} 
-       onClick={() => setViewData('table')}
-       />
-            <AreaChartOutlined   className={`mx-2 ${viewData === 'analytics' ? 'active-icon' : 'inactive-icon'}`} 
-       onClick={() => setViewData('analytics')}
-       />
-          </div>
+        <UnorderedListOutlined
+          className={`mx-2 ${viewData === 'table' ? 'active-icon' : 'inactive-icon'}`}
+          onClick={() => setViewData('table')}
+        />
+        <AreaChartOutlined
+          className={`mx-2 ${viewData === 'analytics' ? 'active-icon' : 'inactive-icon'}`}
+          onClick={() => setViewData('analytics')}
+        />
+      </div>
       <div className="content">
-        {viewData === 'table' ? 
-        <Table columns={columns} dataSource={allTransaction}/>:<Analytics allTransaction={allTransaction}/>
-        }
-        
+        {viewData === 'table' ? <Table columns={columns} dataSource={allTransaction} /> : <Analytics allTransaction={allTransaction} />}
       </div>
       <Modal title="Add transaction" open={showModal} onCancel={() => setShowModal(false)} footer={false}>
         <Form layout="vertical" onFinish={handleSubmit}>
@@ -189,7 +178,9 @@ const HomePage = () => {
             <Input type="text" />
           </Form.Item>
           <div className="d-flex justify-content-end">
-            <button type="submit" className="btn btn-primary">Save</button>
+            <button type="submit" className="btn btn-primary">
+              Save
+            </button>
           </div>
         </Form>
       </Modal>

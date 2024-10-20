@@ -24,7 +24,10 @@ app.use(express.static(path.join(__dirname,'./client/build')))
 app.get('*',function(req,res){
     res.sendFile(path.join(__dirname,'./client/build/index.html'))
     });
-const PORT=8080 || process.env.PORT
+// const PORT=8080 || process.env.PORT
+// const PORT = process.env.PORT || 8080;
+const PORT = process.env.NODE_ENV === 'production' ? process.env.PORT : 8080;
+
 //listen server
 app.listen(PORT,()=>{
     console.log("hoho")
